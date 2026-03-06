@@ -1,79 +1,213 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Mi Sistema</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ===== RESET ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-<style>
+    /* ===== FONDO GENERAL ===== */
+    /* body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #4e73df, #1cc88a);
+    } */
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-body{
-font-family:Segoe UI;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-background:#f5f5f5;
+  /* Fondo con la imagen de niños */
+  background-image: url('img/fondo-ninos.jpg');
+  background-size: cover;        /* La imagen cubre toda la pantalla */
+  background-position: center;   /* Centrada */
+  background-repeat: no-repeat;  /* No se repite */
+
+  /* Opcional: agrega un overlay semitransparente para que el login resalte */
+  position: relative;
 }
 
-.login{
-background:white;
-padding:40px;
-border-radius:15px;
-width:350px;
-text-align:center;
-box-shadow:0 5px 20px rgba(0,0,0,.1);
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255,255,255,0.3); /* ajuste de transparencia para resaltar el login */
+  z-index: 0;
 }
 
-input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:8px;
-border:1px solid #ddd;
+.login-wrapper {
+  position: relative; /* Para que el login quede encima del overlay */
+  z-index: 1;
 }
 
-button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-}
+    /* ===== CONTENEDOR LOGIN ===== */
+    .login-wrapper {
+      width: 100%;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-#btnLogin{
-background:#ff7f50;
-color:white;
-}
+    .login-container {
+      background: #fff3e0; /* igual que las tarjetas del dashboard */
+      padding: 40px 30px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
 
-#btnRegistro{
-background:#858796;
-color:white;
-}
+    .login-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
 
-</style>
+    /* ===== TITULOS ===== */
+    .login-container h2 {
+      margin-bottom: 5px;
+      color: #ff7f50;
+      font-size: 1.8rem;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+    }
 
+    .login-container p {
+      margin-bottom: 20px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    /* ===== INPUTS ===== */
+    .input-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%);
+      color: #ff7f50;
+      font-size: 1rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px 10px 10px 35px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      outline: none;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #ff7f50;
+      box-shadow: 0 0 0 2px rgba(255,127,80,0.2);
+    }
+
+    /* ===== BOTONES ===== */
+    .botones {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .botones button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    #btnLogin {
+      background: #ff7f50;
+      color: white;
+    }
+
+    #btnLogin:hover {
+      background: #ff6f40;
+    }
+
+    #btnRegistro {
+      background: #858796;
+      color: white;
+    }
+
+    #btnRegistro:hover {
+      background: #6c757d;
+    }
+
+    /* ===== MENSAJES ===== */
+    #mensaje {
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: bold;
+      color: red;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+
+      .botones button {
+        padding: 10px;
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="login">
+<div class="login-wrapper">
+  <div class="login-container">
+    <h2>¡ED REY DE REYES👑!</h2>
+    <p>Ingresa tus datos para continuar</p>
 
-<h2>👑 ED REY DE REYES</h2>
+    <div class="input-group">
+      <i class="fa fa-envelope"></i>
+      <input type="email" id="email" placeholder="Correo">
+    </div>
 
-<input type="text" id="nombre" placeholder="Nombre">
-<input type="email" id="email" placeholder="Correo">
-<input type="password" id="password" placeholder="Contraseña">
+    <div class="input-group">
+      <i class="fa fa-lock"></i>
+      <input type="password" id="password" placeholder="Contraseña">
+    </div>
 
-<button id="btnRegistro">Registrar</button>
-<button id="btnLogin">Ingresar</button>
+    <div class="botones">
+      <button id="btnLogin"><i class="fa fa-sign-in-alt"></i> Ingresar</button>
+      <button id="btnRegistro"><i class="fa fa-user-plus"></i> Registrarse</button>
+    </div>
 
+    <p id="mensaje"></p>
+  </div>
 </div>
 
 <script type="module" src="login.js"></script>
-
 </body>
 </html>
