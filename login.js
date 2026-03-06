@@ -1,77 +1,50 @@
-import { auth, db } from "./firebase.js";
-
-import {
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-collection,
-addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const nombreInput = document.getElementById("nombre");
+const nombre = document.getElementById("nombre");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
 
 const btnLogin = document.getElementById("btnLogin");
 const btnRegistro = document.getElementById("btnRegistro");
 
-const usuariosCollection = collection(db, "usuarios");
 
+// REGISTRAR
+btnRegistro.onclick = () => {
 
-// REGISTRO
-btnRegistro.onclick = async () => {
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-const email = emailInput.value.trim();
-const password = passwordInput.value.trim();
-const nombre = nombreInput.value.trim();
-
-if(!email || !password || !nombre){
+if(!nombre.value || !email.value || !password.value){
 alert("Complete todos los campos");
 return;
 }
 
-try{
-
-const userCredential =
-await createUserWithEmailAndPassword(auth,email,password);
-
-await addDoc(usuariosCollection,{
-uid:userCredential.user.uid,
-nombre,
-email,
-creado:new Date()
+usuarios.push({
+nombre:nombre.value,
+email:email.value,
+password:password.value
 });
 
+localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
 alert("Usuario registrado");
-
-}catch(error){
-alert(error.message);
-}
-
 };
 
 
 // LOGIN
-btnLogin.onclick = async () => {
+btnLogin.onclick = () => {
 
-const email = emailInput.value.trim();
-const password = passwordInput.value.trim();
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-if(!email || !password){
-alert("Complete todos los campos");
-return;
-}
+let usuarioEncontrado = usuarios.find(u =>
+u.email === email.value &&
+u.password === password.value
+);
 
-try{
+if(usuarioEncontrado){
 
-await signInWithEmailAndPassword(auth,email,password);
+localStorage.setItem("usuarioActual", JSON.stringify(usuarioEncontrado));
 
 window.location="dashboard.html";
 
-}catch{
+}else{
 alert("Usuario o contraseña incorrectos");
 }
 
