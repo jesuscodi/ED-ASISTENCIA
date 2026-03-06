@@ -1,3 +1,14 @@
+import { db } from "./firebase.js";
+
+import {
+collection,
+addDoc,
+query,
+where,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
 const nombre = document.getElementById("nombre");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
@@ -6,46 +17,52 @@ const btnLogin = document.getElementById("btnLogin");
 const btnRegistro = document.getElementById("btnRegistro");
 
 
-// REGISTRAR
-btnRegistro.onclick = () => {
+const usuariosRef = collection(db,"usuarios");
 
-let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+// REGISTRAR
+btnRegistro.onclick = async () => {
 
 if(!nombre.value || !email.value || !password.value){
 alert("Complete todos los campos");
 return;
 }
 
-usuarios.push({
+try{
+
+await addDoc(usuariosRef,{
 nombre:nombre.value,
 email:email.value,
 password:password.value
 });
 
-localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
 alert("Usuario registrado");
+
+}catch(e){
+alert(e.message);
+}
+
 };
 
 
 // LOGIN
-btnLogin.onclick = () => {
+btnLogin.onclick = async () => {
 
-let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-
-let usuarioEncontrado = usuarios.find(u =>
-u.email === email.value &&
-u.password === password.value
+const q = query(
+usuariosRef,
+where("email","==",email.value),
+where("password","==",password.value)
 );
 
-if(usuarioEncontrado){
+const snap = await getDocs(q);
 
-localStorage.setItem("usuarioActual", JSON.stringify(usuarioEncontrado));
+if(snap.empty){
+alert("Usuario o contraseña incorrectos");
+return;
+}
+
+localStorage.setItem("usuario", email.value);
 
 window.location="dashboard.html";
-
-}else{
-alert("Usuario o contraseña incorrectos");
-}
 
 };
