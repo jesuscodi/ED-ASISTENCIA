@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Mi Sistema</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar horizontal -->
+<header class="navbar">
+  <div class="logo">Mi Sistema</div>
+  <button id="menu-toggle" class="menu-toggle"><i class="fa fa-bars"></i></button>
+  <nav class="nav-links" id="nav-links">
+    <ul class="menu-horizontal">
+      <li><button class="menu-btn" data-section="dashboard">Dashboard</button></li>
+      <li><button class="menu-btn" data-section="aulas">Aulas</button></li>
+      <li><button class="menu-btn" data-section="alumnos">Alumnos</button></li>
+      <li><button class="menu-btn" data-section="asistencia">Registrar Asistencia</button></li>
+      <li><button class="menu-btn" data-section="historial">Historial</button></li>
+      <li><button id="logout"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</button></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- <!-- Contenido principal -->
+
+
+<!-- Dashboard Cards -->
+<section class="cards" id="dashboard-cards">
+  <div class="card card-aulas">
+    <i class="fa fa-chalkboard card-icon"></i>
+    <div class="card-info">
+      <h3>Aulas</h3>
+      <p id="totalAulas">0</p>
+    </div>
+  </div>
+  <div class="card card-alumnos">
+    <i class="fa fa-user-graduate card-icon"></i>
+    <div class="card-info">
+      <h3>Alumnos</h3>
+      <p id="totalAlumnos">0</p>
+    </div>
+  </div>
+  <div class="card card-asistencias">
+    <i class="fa fa-clipboard-list card-icon"></i>
+    <div class="card-info">
+      <h3>Asistencias Hoy</h3>
+      <p id="asistenciasHoy">0</p>
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- Cinta de fotos tipo filmstrip -->
+<div class="filmstrip" id="dashboard-filmstrip">
+  <div class="filmstrip-track">
+  <img src="img/nino1.jpg" alt="Imagen 1">
+  <img src="img/nino2.jpg" alt="Imagen 2">
+  <img src="img/nino3.jpg" alt="Imagen 3">
+  <img src="img/nino4.jpg" alt="Imagen 4">
+  <img src="img/nino5.jpg" alt="Imagen 5">
+  <img src="img/nino6.jpg" alt="Imagen 6">
+  <img src="img/nino7.jpg" alt="Imagen 7">
+   </div>
+</div>
+
+
+<style>
+  /* Slider de imágenes */
+/* Contenedor visible */
+.filmstrip {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 15px;
+  margin-top: 30px;
+  background: #f5f5f5; /* opcional, fondo suave */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Track que se mueve */
+.filmstrip-track {
+  display: flex;
+  gap: 10px;
+  animation: scroll 20s linear infinite; /* animación continua */
+}
+
+/* Fotos dentro del track */
+.filmstrip-track img {
+  width: 200px;   /* tamaño de cada foto */
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Animación */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); /* mueve la mitad del track, repetir imágenes para loop */
+  }
+}
+
+
+/* Dashboard Cards */
+  
+.cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.card {
+  flex: 1;
+  min-width: 200px;
+  background: #fff3e0;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  color: #ff6f61;
+}
+
+.card-info h3 {
+  margin: 0;
+  color: #ff6f61;
+  font-size: 1.2rem;
+}
+
+.card-info p {
+  margin: 5px 0 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffb347;
+}
+
+/* Diferentes colores de tarjetas si quieres */
+.card-aulas .card-icon { color: #ff6f61; }
+.card-alumnos .card-icon { color: #ff9f43; }
+.card-asistencias .card-icon { color: #6a11cb; } /* un color morado para diferenciar */
+</style>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+async function cargarDashboard() {
+  // Total Alumnos
+  const alumnosSnap = await getDocs(collection(db, "alumnos"));
+  document.getElementById("totalAlumnos").textContent = alumnosSnap.size;
+
+  // Total Aulas
+  const aulasSnap = await getDocs(collection(db, "aulas"));
+  document.getElementById("totalAulas").textContent = aulasSnap.size;
+
+  // Asistencias de hoy
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const fechaHoy = `${yyyy}-${mm}-${dd}`;
+
+  const asistenciasSnap = await getDocs(query(collection(db, "asistencias"), where("fecha", "==", fechaHoy)));
+  document.getElementById("asistenciasHoy").textContent = asistenciasSnap.size;
+}
+
+cargarDashboard();
+</script>
+
+  <!-- Contenido dinámico -->
+  <section id="dynamic-content" style="display:none; margin-top:30px;">
+    <!-- Aquí se carga el contenido de cada sección -->
+  </section>
+</main>
+
+<script type="module">
+import { loadContent, initAlumnos, initAulas, initAsistencia,initHistorial } from "./app.js";
+
+// Logout
+document.getElementById("logout").onclick = () => {
+  localStorage.removeItem("usuario");
+  window.location.href = "index.html";
+};
+
+// Verificar login
+if (!localStorage.getItem("usuario")) window.location.href = "index.html";
+
+// Datos de ejemplo (puedes actualizar luego con Firestore)
+document.getElementById("totalAulas").innerText = 0;
+document.getElementById("totalAlumnos").innerText = 0;
+document.getElementById("asistenciasHoy").innerText = 0;
+
+// Manejar clic en menú
+document.querySelectorAll('.menu-btn').forEach(btn => {
+  btn.onclick = async () => {
+    const section = btn.getAttribute('data-section');
+    
+    if(section === 'dashboard'){
+      document.getElementById("dashboard-cards").style.display = 'flex';
+      document.getElementById("dynamic-content").style.display = 'none';
+    } else {
+      document.getElementById("dashboard-cards").style.display = 'none';
+      const dynamicContent = document.getElementById("dynamic-content");
+      dynamicContent.style.display = 'block';
+
+      try {
+        const response = await fetch(`${section}-contenido.html`);
+        if(response.ok){
+          const html = await response.text();
+          dynamicContent.innerHTML = html;
+
+          // Inicializar la lógica de cada sección
+          if(section === "alumnos") await initAlumnos();
+          if(section === "aulas") await initAulas();
+          if(section === "asistencia") await initAsistencia();
+          if(section === "historial") await initHistorial(); 
+        } else {
+          dynamicContent.innerHTML = `<p>Error al cargar ${section}-contenido.html</p>`;
+        }
+      } catch (error) {
+        dynamicContent.innerHTML = `<p>Error: ${error}</p>`;
+      }
+    }
+
+    // Cerrar menú en móvil
+    if(window.innerWidth <= 768) document.getElementById("nav-links").classList.remove('active');
+  };
+});
+
+// Toggle menú en móvil
+document.getElementById("menu-toggle").onclick = () => {
+  document.getElementById("nav-links").classList.toggle('active');
+};
+
+document.querySelectorAll('.menu-btn').forEach(btn => {
+  btn.onclick = async () => {
+    const section = btn.getAttribute('data-section');
+
+    if(section === 'dashboard'){
+      document.getElementById("dashboard-cards").style.display = 'flex';
+      document.getElementById("dashboard-filmstrip").style.display = 'flex';  // mostrar cinta
+      document.getElementById("dynamic-content").style.display = 'none';
+    } else {
+      document.getElementById("dashboard-cards").style.display = 'none';
+      document.getElementById("dashboard-filmstrip").style.display = 'none'; // ocultar cinta
+      const dynamicContent = document.getElementById("dynamic-content");
+      dynamicContent.style.display = 'block';
+
+      // cargar sección dinámica
+      try {
+        const response = await fetch(`${section}-contenido.html`);
+        if(response.ok){
+          const html = await response.text();
+          dynamicContent.innerHTML = html;
+
+          // Inicializar lógica de cada sección
+          if(section === "alumnos") await initAlumnos();
+          if(section === "aulas") await initAulas();
+          if(section === "asistencia") await initAsistencia();
+          if(section === "historial") await initHistorial(); 
+        } else {
+          dynamicContent.innerHTML = `<p>Error al cargar ${section}-contenido.html</p>`;
+        }
+      } catch (error) {
+        dynamicContent.innerHTML = `<p>Error: ${error}</p>`;
+      }
+    }
+
+    // cerrar menú en móvil
+    if(window.innerWidth <= 768) document.getElementById("nav-links").classList.remove('active');
+  };
+});
+
+  
+</script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<div class="historial-container">
+  <h2>Historial de Asistencias</h2>
+
+  <div class="historial-filtro">
+    <div>
+      <label>Aula:</label>
+      <select id="filtroAula">
+        <option value="">Todas las aulas</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Fecha:</label>
+      <input type="date" id="filtroFecha">
+    </div>
+
+    <div style="align-self:end;">
+      <button id="filtrar">Filtrar</button>
+      <button id="descargarExcel">📥 Descargar Historial</button>
+    </div>
+  </div>
+
+  <table id="tablaHistorial">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Aula</th>
+        <th>Alumno</th>
+        <th>Presente</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<style>
+/* Contenedor general */
+.historial-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Título */
+.historial-container h2 {
+  color: #ff6f61;
+  margin-bottom: 20px;
+}
+
+/* Flex para filtros */
+.historial-filtro {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* Labels */
+.historial-filtro label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Inputs, selects y botones */
+.historial-filtro select,
+.historial-filtro input,
+.historial-filtro button {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #ffb347;
+  outline: none;
+  transition: 0.3s;
+}
+
+.historial-filtro select:focus,
+.historial-filtro input:focus {
+  border-color: #ff6f61;
+  box-shadow: 0 0 6px rgba(255,111,97,0.3);
+}
+
+/* Botón filtrar */
+.historial-filtro button {
+  background: linear-gradient(90deg, #ff6f61, #ffb347);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.3s;
+}
+
+.historial-filtro button:hover {
+  transform: scale(1.05);
+}
+
+/* Tabla */
+#tablaHistorial {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff3e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Encabezados */
+#tablaHistorial th, #tablaHistorial td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ffdab9;
+}
+
+#tablaHistorial th {
+  background: #ffb347;
+  color: white;
+}
+
+/* Filas alternadas y hover */
+#tablaHistorial tr:nth-child(even) {
+  background: #ffeace;
+}
+
+#tablaHistorial tr:hover {
+  background: #ffd8b2;
+}
+
+/* Responsive */
+@media(max-width: 768px) {
+  .historial-filtro {
+    flex-direction: column;
+  }
+}
+</style>

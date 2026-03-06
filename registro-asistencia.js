@@ -1,0 +1,83 @@
+import { db } from "./firebase.js";
+import { collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Esperar a que el HTML cargue
+setTimeout(() => {
+
+  const fechaInput = document.getElementById("fecha");
+  const aulaSelect = document.getElementById("aulaSelect");
+  const cargarAlumnosBtn = document.getElementById("cargarAlumnos");
+  const tablaAlumnos = document.querySelector("#tablaAlumnos tbody");
+  const guardarBtn = document.getElementById("guardarAsistencia");
+
+  let alumnosSeleccionados = [];
+
+  // ================= CARGAR AULAS =================
+  async function cargarAulas() {
+    aulaSelect.innerHTML = '<option value="">Seleccionar aula</option>';
+    const data = await getDocs(collection(db, "aulas"));
+
+    data.forEach(a => {
+      aulaSelect.innerHTML += `
+        <option value="${a.data().nombre}">
+          ${a.data().nombre}
+        </option>
+      `;
+    });
+  }
+
+  // ================= CARGAR ALUMNOS =================
+  cargarAlumnosBtn.onclick = async () => {
+    if (!fechaInput.value || !aulaSelect.value) {
+      return alert("Seleccione fecha y aula");
+    }
+
+    tablaAlumnos.innerHTML = "";
+    alumnosSeleccionados = [];
+
+    const alumnosData = await getDocs(collection(db, "alumnos"));
+    const filtrados = alumnosData.docs.filter(al => al.data().aula === aulaSelect.value);
+
+    filtrados.forEach(al => {
+      alumnosSeleccionados.push({ id: al.id, nombre: al.data().nombre });
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${al.data().nombre}</td>
+        <td><input type="checkbox" data-id="${al.id}"></td>
+      `;
+      tablaAlumnos.appendChild(tr);
+    });
+  };
+
+  // ================= GUARDAR ASISTENCIA =================
+  guardarBtn.onclick = async () => {
+    if (!fechaInput.value || !aulaSelect.value) {
+      return alert("Seleccione fecha y aula antes de guardar");
+    }
+
+    const checkboxes = document.querySelectorAll("#tablaAlumnos input[type=checkbox]");
+
+    for (const cb of checkboxes) {
+      const alumnoId = cb.dataset.id;
+      const alumno = alumnosSeleccionados.find(a => a.id === alumnoId);
+      const presente = cb.checked;
+
+      const docId = `${fechaInput.value}_${alumnoId}`;
+
+      await setDoc(doc(db, "asistencias", docId), {
+        alumno: alumnoId,
+        nombre: alumno.nombre,
+        aula: aulaSelect.value,
+        fecha: fechaInput.value,
+        presente
+      }, { merge: true });
+    }
+
+    alert("Asistencia registrada correctamente ✅");
+  };
+
+  // Inicial
+  cargarAulas();
+
+}, 100);
